@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { LandingPageComponent } from './components/landing-page/landing-page.component';
 import { LoginComponent } from './components/login/login.component';
 import { CustomerListComponent } from './components/customer-list/customer-list.component';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
     {

@@ -1,3 +1,4 @@
+<p-toast position="bottom-right"></p-toast>
 <div class="login-container flex align-items-center justify-content-center min-h-screen p-4">
     <div class="login-card p-6 shadow-8 border-round-xl bg-white" style="width: 90%; max-width: 550px; margin: 0 auto;">
 
@@ -15,14 +16,15 @@
                 <label class="font-bold text-700">Username</label>
                 <p-iconField iconPosition="left">
                     <p-inputIcon class="pi pi-user"></p-inputIcon>
-                    <input pInputText type="text" placeholder="username" class="w-full p-inputtext-lg" />
+                    <input pInputText type="text" placeholder="username" class="w-full p-inputtext-lg"
+                        [(ngModel)]="loginData.username" />
                 </p-iconField>
             </div>
 
             <div class="flex flex-column gap-2">
                 <label class="font-bold text-700">Password</label>
                 <p-password [toggleMask]="true" [feedback]="false" placeholder="password" styleClass="w-full"
-                    inputStyleClass="w-full p-inputtext-lg">
+                    inputStyleClass="w-full p-inputtext-lg" [(ngModel)]="loginData.password">
                 </p-password>
             </div>
 
@@ -33,7 +35,8 @@
                 </div>
             </div>
 
-            <p-button label="Sign In" icon="pi pi-sign-in" styleClass="w-full p-button-lg" routerLink="/customers">
+            <p-button label="Sign In" icon="pi pi-sign-in" styleClass="w-full p-button-lg" (onClick)="onLogin()"
+                [loading]="loading">
             </p-button>
         </div>
 

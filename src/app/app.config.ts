@@ -1,11 +1,14 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter, withViewTransitions } from '@angular/router'; // Gidugangan og view transitions
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideRouter, withViewTransitions } from '@angular/router';
+import { provideHttpClient, withInterceptors } from '@angular/common/http'; // Gi-usab ni
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
 import { routes } from './app.routes';
 import { ConfirmationService, MessageService } from 'primeng/api';
+
+// I-import ang imong gihimo nga interceptor
+import { authInterceptor } from './interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -17,26 +20,28 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
 
     // 3. Router with Smooth Transitions
-    provideRouter(routes, withViewTransitions()), // Para naay smooth fade in/out inig balhin og page
+    provideRouter(routes, withViewTransitions()),
 
-    // 4. HTTP Client
-    provideHttpClient(withInterceptorsFromDi()),
+    // 4. HTTP Client with Auth Interceptor
+    // Gi-update nato ni para awtomatiko nga i-attach ang Token sa matag request
+    provideHttpClient(
+      withInterceptors([authInterceptor])
+    ),
 
     // 5. Animations
     provideAnimationsAsync(),
 
-    // 6. PrimeNG v18 Configuration (Themed with Aura)
+    // 6. PrimeNG v18 Configuration
     providePrimeNG({
       theme: {
         preset: Aura,
         options: {
           prefix: 'p',
-          // Giusab nato kini aron ikaw ang naay manual control sa Dark Mode puhon
           darkModeSelector: '.app-dark',
           cssLayer: false
         }
       },
-      ripple: true // Gi-enable ang ripple effect para sa nindot nga button clicks
+      ripple: true
     })
   ]
 };
