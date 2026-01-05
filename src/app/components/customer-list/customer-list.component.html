@@ -7,7 +7,8 @@
             <h2 class="m-0 font-bold text-primary text-2xl">Customer Directory</h2>
         </div>
         <div class="flex gap-2">
-            <p-button label="Export" icon="pi pi-file-excel" severity="success" (onClick)="exportToExcel()"></p-button>
+            <p-button label="Export" icon="pi pi-file-excel" (onClick)="exportToExcel()" styleClass="purple-button">
+            </p-button>
             <p-button label="Add Customer" icon="pi pi-plus" (onClick)="showDialog()"></p-button>
         </div>
     </div>

@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core'; // Gidugang ang OnInit
 import { Router, RouterLink } from '@angular/router';
-import { FormsModule } from '@angular/forms'; // <--- Importante para sa [(ngModel)]
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 // PrimeNG Modules
@@ -12,16 +12,18 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { Select } from 'primeng/select';
 
-// Service
+// Services
 import { AuthService } from '../../services/auth.service';
+import { BranchService } from '../../services/branch.service'; // <--- I-add kini
 
 @Component({
     selector: 'app-login',
     standalone: true,
     imports: [
         CommonModule,
-        FormsModule,      // <--- Ayaw kalimti ni
+        FormsModule,
         RouterLink,
         ButtonModule,
         InputTextModule,
@@ -29,40 +31,73 @@ import { AuthService } from '../../services/auth.service';
         PasswordModule,
         IconFieldModule,
         InputIconModule,
-        ToastModule       // <--- Para sa pop-up messages
+        ToastModule,
+        Select // <--- Ayaw kalimti sa imports array
     ],
     templateUrl: './login.component.html',
     styleUrl: './login.component.css',
-    providers: [MessageService] // Kinahanglan ni para sa Toast
+    providers: [MessageService]
 })
-export class LoginComponent {
-    // 1. Data model para sa form
+export class LoginComponent implements OnInit {
+    // Data models
     loginData = {
         username: '',
         password: ''
     };
 
+    branches: any[] = []; // Listahan sa branches gikan sa DB
+    selectedBranch: any = null; // Ang napili nga branch object
     loading: boolean = false;
 
     constructor(
         private authService: AuthService,
+        private branchService: BranchService, // Inject ang BranchService
         private router: Router,
         private messageService: MessageService
     ) { }
 
-    // 2. Login Function
+    // Inig load sa page, kuhaon dayon ang mga branches
+    ngOnInit() {
+        this.loadBranches();
+    }
+
+    loadBranches() {
+        this.branchService.getAllBranches().subscribe({
+            next: (data: any) => {
+                this.branches = data;
+
+                if (this.branches && this.branches.length > 0) {
+                    // I-set ang default value sa first record
+                    this.selectedBranch = this.branches.find(b => b.isActive === true) || this.branches[0];
+                }
+            },
+            error: (err: any) => {
+                console.error('Error loading branches', err);
+            }
+        });
+    }
+
     onLogin() {
+        // 1. Validation: Siguroha nga naay username, password, ug branch
         if (!this.loginData.username || !this.loginData.password) {
-            this.messageService.add({ severity: 'warn', summary: 'Warning', detail: 'Please enter username and password' });
+            this.messageService.add({ severity: 'warn', summary: 'Warning', detail: 'Please enter credentials' });
+            return;
+        }
+
+        if (!this.selectedBranch) {
+            this.messageService.add({ severity: 'warn', summary: 'Required', detail: 'Please select a branch' });
             return;
         }
 
         this.loading = true;
         this.authService.login(this.loginData).subscribe({
             next: (res: any) => {
+                // 2. I-save ang gipili nga BranchId sa session/localStorage
+                // Ang res.user.branchId (optional) vs selectedBranch.branchId
+                this.authService.setCurrentBranch(this.selectedBranch.branchId);
+
                 this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Login Successful!' });
 
-                // Pagkahuman og 1 second, i-redirect sa dashboard
                 setTimeout(() => {
                     this.router.navigate(['/customers']);
                 }, 1000);

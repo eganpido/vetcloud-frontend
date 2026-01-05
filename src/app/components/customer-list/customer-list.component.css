@@ -140,3 +140,14 @@ CSS
     box-shadow: inset 4px 0 0 #3b82f6; /* Naay blue line sa kilid inig hover */
     transition: all 0.1s ease;
 }
+
+::ng-deep .purple-button {
+    background: #673ab7 !important; /* Deep Purple */
+    border-color: #673ab7 !important;
+    color: white !important;
+}
+
+::ng-deep .purple-button:hover {
+    background: #512da8 !important; /* Mas itom gamay inig hover */
+    border-color: #512da8 !important;
+}

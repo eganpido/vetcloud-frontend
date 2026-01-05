@@ -6,28 +6,47 @@ import { Observable, tap } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:5000/api/auth'; // Usba ang port kon lahi imong gamit
+  private apiUrl = 'http://localhost:5000/api/auth';
 
   constructor(private http: HttpClient) { }
 
   login(credentials: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
       tap((res: any) => {
-        // I-save ang token ug user info kon malampuson ang login
+        // 1. I-save ang Core User Info
         localStorage.setItem('token', res.token);
         localStorage.setItem('userId', res.user.userId.toString());
         localStorage.setItem('username', res.user.username);
+
+        // 2. I-save ang Default Branch (kon gikan sa backend)
+        // Kon ang user naay gi-assign nga default branch, i-set nato ni
+        if (res.user.branchId) {
+          this.setCurrentBranch(res.user.branchId);
+        }
       })
     );
   }
 
-  // Method para mahibal-an kon logged in ba ang user
+  // --- BRANCH MANAGEMENT METHODS ---
+
+  // Gamiton kini inig pili sa user og branch sa dropdown
+  setCurrentBranch(branchId: number | string) {
+    localStorage.setItem('currentBranchId', branchId.toString());
+  }
+
+  // Kuhaon ang "Active" branch para sa Interceptor o Forms
+  getCurrentBranchId(): string | null {
+    return localStorage.getItem('currentBranchId');
+  }
+
+  // --- AUTH HELPERS ---
+
   isLoggedIn(): boolean {
     return !!localStorage.getItem('token');
   }
 
-  // Method para sa pag-logout
   logout() {
+    // Tangtangon tanan apil ang branch session
     localStorage.clear();
   }
 }
