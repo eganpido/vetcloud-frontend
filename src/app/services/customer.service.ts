@@ -31,4 +31,8 @@ export class CustomerService {
     deleteCustomer(code: string): Observable<any> {
         return this.http.delete<any>(`${this.apiUrl}/delete/${code}`);
     }
+
+    getDashboardStats(): Observable<any> {
+        return this.http.get(`${this.apiUrl}/stats`);
+    }
 }

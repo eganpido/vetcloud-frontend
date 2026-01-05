@@ -99,7 +99,7 @@ export class LoginComponent implements OnInit {
                 this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Login Successful!' });
 
                 setTimeout(() => {
-                    this.router.navigate(['/customers']);
+                    this.router.navigate(['/dashboard']);
                 }, 1000);
             },
             error: (err: any) => {

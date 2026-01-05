@@ -16,7 +16,7 @@
                 <label class="font-bold text-700">Username</label>
                 <p-iconField iconPosition="left">
                     <p-inputIcon class="pi pi-user"></p-inputIcon>
-                    <input pInputText type="text" placeholder="username" class="w-full p-inputtext-lg"
+                    <input pInputText type="text" placeholder="username" class="w-full p-inputtext-md"
                         [(ngModel)]="loginData.username" />
                 </p-iconField>
             </div>
@@ -24,7 +24,7 @@
             <div class="flex flex-column gap-2">
                 <label class="font-bold text-700">Password</label>
                 <p-password [toggleMask]="true" [feedback]="false" placeholder="password" styleClass="w-full"
-                    inputStyleClass="w-full p-inputtext-lg" [(ngModel)]="loginData.password">
+                    inputStyleClass="w-full p-inputtext-md" [(ngModel)]="loginData.password">
                 </p-password>
             </div>
 
@@ -32,7 +32,7 @@
                 <label class="font-bold text-700">Select Branch</label>
                 <p-select [options]="branches" [(ngModel)]="selectedBranch" optionLabel="branchName"
                     placeholder="Select a Branch" [filter]="true" filterBy="branchName"
-                    styleClass="w-full p-inputtext-lg">
+                    styleClass="w-full p-inputtext-md">
                 </p-select>
             </div>
 

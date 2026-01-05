@@ -1,0 +1,69 @@
+<div class="layout-wrapper">
+    <div class="sidebar-overlay" *ngIf="sidebarVisible" (click)="sidebarVisible = false"></div>
+
+    <aside class="custom-sidebar shadow-2" [class.show]="sidebarVisible">
+        <div class="sidebar-header">
+            <div class="logo-area flex align-items-center gap-2">
+                <i class="pi pi-cloud text-primary-500 text-5xl"></i>
+                <span class="text-3xl font-semibold text-900 tracking-tight">
+                    VET<span class="text-primary-500">Cloud</span>
+                </span>
+            </div>
+            <p-button icon="pi pi-times" [text]="true" [rounded]="true" severity="secondary"
+                (onClick)="sidebarVisible = false"></p-button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="menu-label uppercase tracking-wider text-xs font-bold text-400">Main Menu</div>
+
+            <a routerLink="/dashboard" routerLinkActive="active-link" class="nav-item" (click)="sidebarVisible = false">
+                <div class="icon-wrapper">
+                    <i class="pi pi-th-large"></i>
+                </div>
+                <span class="font-semibold">Dashboard</span>
+            </a>
+
+            <a routerLink="/customers" routerLinkActive="active-link" class="nav-item" (click)="sidebarVisible = false">
+                <div class="icon-wrapper">
+                    <i class="pi pi-users"></i>
+                </div>
+                <span class="font-semibold">Customers</span>
+            </a>
+
+            <div class="menu-label mt-4 uppercase tracking-wider text-xs font-bold text-400">Settings</div>
+
+            <a (click)="logout()" class="nav-item logout-item">
+                <div class="icon-wrapper">
+                    <i class="pi pi-sign-out"></i>
+                </div>
+                <span class="font-semibold">Logout</span>
+            </a>
+        </nav>
+    </aside>
+
+    <div class="main-content">
+        <header class="top-nav shadow-sm bg-white">
+            <div class="nav-left">
+                <p-button icon="pi pi-bars" [text]="true" [rounded]="true" (onClick)="sidebarVisible = true"
+                    styleClass="menu-btn p-2"></p-button>
+            </div>
+
+            <div class="nav-right">
+                <div class="user-profile flex align-items-center gap-3">
+                    <div class="user-text text-right hidden sm:block">
+                        <span class="u-name block font-semibold text-900 text-sm">{{username}}</span>
+                        <span class="u-role block text-xs text-500 font-medium">Administrator</span>
+                    </div>
+                    <p-avatar icon="pi pi-user" shape="circle" size="large"
+                        styleClass="profile-avatar shadow-2 bg-blue-50 text-blue-600"></p-avatar>
+                </div>
+            </div>
+        </header>
+
+        <main class="content-body bg-slate-50">
+            <div class="fade-in-up">
+                <router-outlet></router-outlet>
+            </div>
+        </main>
+    </div>
+</div>
