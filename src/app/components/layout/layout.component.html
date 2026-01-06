@@ -51,8 +51,8 @@
             <div class="nav-right">
                 <div class="user-profile flex align-items-center gap-3">
                     <div class="user-text text-right hidden sm:block">
-                        <span class="u-name block font-semibold text-900 text-sm">{{username}}</span>
-                        <span class="u-role block text-xs text-500 font-medium">Administrator</span>
+                        <span class="u-name block font-semibold text-900 text-sm">{{fullname}}</span>
+                        <span class="u-role block text-sm text-500 font-medium">{{branchName}}</span>
                     </div>
                     <p-avatar icon="pi pi-user" shape="circle" size="large"
                         styleClass="profile-avatar shadow-2 bg-blue-50 text-blue-600"></p-avatar>
@@ -65,5 +65,22 @@
                 <router-outlet></router-outlet>
             </div>
         </main>
+
+        <footer class="bg-white py-4 px-4 mt-auto border-top-1 border-gray-100">
+            <div class="flex flex-column align-items-center justify-content-center text-500 text-sm text-center">
+                <p class="m-0 font-medium flex align-items-center gap-1">
+                    © 2026
+                    <span class="font-bold tracking-tight ml-1">
+                        <span class="text-900">VET</span><span class="text-primary">Cloud</span>
+                    </span>
+                    by Streetsmart Solutions.
+                </p>
+                <div class="flex gap-3 mt-2 opacity-50">
+                    <span class="text-xs">Version 1.0.4</span>
+                    <span class="text-xs">|</span>
+                    <span class="text-xs">All rights reserved.</span>
+                </div>
+            </div>
+        </footer>
     </div>
 </div>

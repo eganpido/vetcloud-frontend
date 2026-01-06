@@ -13,9 +13,9 @@
     "sourceMap": true,
     "declaration": false,
     "experimentalDecorators": true,
-    /* Mao ni ang solusyon sa Error ts(2307) */
-    "moduleResolution": "nodenext",
-    "module": "nodenext",
+    /* Giusab kining duha para mawala ang .js requirement */
+    "moduleResolution": "bundler",
+    "module": "ESNext",
     "target": "ES2022",
     "lib": [
       "ES2022",

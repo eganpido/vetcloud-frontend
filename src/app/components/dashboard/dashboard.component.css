@@ -1,14 +1,95 @@
+/* --- 1. STAT CARDS --- */
 .stat-card {
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border-left: 5px solid #3b82f6;
-    /* Accent color */
+    /* Accent blue */
+    border: none;
 }
 
 .stat-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    background-color: #ffffff;
 }
 
+/* --- 2. DATEPICKER (V18 MODERN & LARGE) --- */
+
+/* Pugson ang tibuok calendar nga mopalapad sa iyang container */
+:host ::ng-deep .custom-dashboard-picker,
+:host ::ng-deep .custom-dashboard-picker .p-datepicker,
+:host ::ng-deep .custom-dashboard-picker .p-datepicker-calendar-container,
+:host ::ng-deep .custom-dashboard-picker table {
+    width: 100% !important;
+    display: table !important;
+    border: none !important;
+}
+
+/* Padak-on ang Header (Month/Year) */
+:host ::ng-deep .p-datepicker-header {
+    padding: 1.5rem 0 !important;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+:host ::ng-deep .p-datepicker-title {
+    font-size: 1.4rem !important;
+    /* Gipadako */
+    font-weight: 700 !important;
+    color: #1e293b;
+}
+
+/* Padak-on ang Weekdays (Mon, Tue, etc.) */
+:host ::ng-deep .p-datepicker table th {
+    padding: 1.2rem 0 !important;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    letter-spacing: 0.1em;
+}
+
+/* Padak-on ang mga Number/Days */
+:host ::ng-deep .p-datepicker table td>span {
+    width: 3.5rem !important;
+    /* Dako nga circle */
+    height: 3.5rem !important;
+    font-size: 1.2rem !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    margin: 0.3rem auto !important;
+    border-radius: 50% !important;
+    transition: all 0.2s ease;
+}
+
+/* Highlight para sa Selected Date */
+:host ::ng-deep .p-datepicker table td>span.p-highlight {
+    background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%) !important;
+    color: white !important;
+    box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4);
+}
+
+/* Hover effect sa mga adlaw */
+:host ::ng-deep .p-datepicker table td>span:not(.p-highlight):hover {
+    background: #eff6ff !important;
+    color: #3B82F6 !important;
+}
+
+/* --- 3. TASK ITEMS --- */
+.task-item {
+    transition: all 0.2s ease;
+}
+
+.task-item:hover {
+    background-color: #ffffff !important;
+    border-color: #3B82F6 !important;
+    /* Primary blue */
+    transform: translateX(8px);
+    /* Inward motion */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+}
+
+/* --- 4. UTILITIES --- */
 .placeholder-line {
     height: 15px;
     background: #f1f5f9;
@@ -18,4 +99,35 @@
 
 .w-6 {
     width: 60%;
+}
+
+/* Custom styling para sa Dialog */
+:host ::ng-deep .custom-task-dialog .p-dialog-header {
+    background: #ffffff;
+    padding: 1.5rem 1.5rem 0 1.5rem;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+:host ::ng-deep .custom-task-dialog .p-dialog-content {
+    padding: 1rem 1.5rem 2rem 1.5rem !important;
+}
+
+/* Para sa icons sa sulod sa input */
+:host ::ng-deep .p-input-icon-left>i {
+    color: #94a3b8;
+}
+
+:host ::ng-deep .p-inputtext:focus {
+    box-shadow: 0 0 0 2px #dbeafe !important;
+    border-color: #3b82f6 !important;
+}
+
+/* Pagpanindot sa dropdown select */
+select.p-inputtext {
+    padding: 0.75rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
 }

@@ -163,3 +163,49 @@
         transform: translateY(0);
     }
 }
+
+/* Logout Item specifically */
+.logout-item {
+    color: #ef4444 !important;
+    /* Red text */
+}
+
+/* Icon wrapper sa logout (katong naay background) */
+.logout-item .icon-wrapper {
+    background-color: #fef2f2;
+    /* Light red background */
+    color: #ef4444;
+    /* Red icon */
+}
+
+/* Hover effect para sa logout */
+.logout-item:hover {
+    background-color: #fef2f2 !important;
+    /* Light red hover */
+    color: #b91c1c !important;
+    /* Darker red text on hover */
+}
+
+/* Siguroha nga ang icon sa sulod mahimong red sab */
+.logout-item:hover .icon-wrapper {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    /* Full height sa screen */
+    overflow-x: hidden;
+}
+
+.content-body {
+    flex: 1 0 auto;
+    /* Kini ang motulod sa footer paubos */
+}
+
+footer {
+    background-color: #ffffff;
+    z-index: 10;
+}

@@ -1,31 +1,194 @@
 <div class="dashboard-container">
     <div class="flex justify-content-between align-items-center mb-4">
-        <h1 class="text-2xl font-bold m-0">Dashboard Overview</h1>
-        <button (click)="loadDashboardData()" class="p-button p-button-text p-button-sm">
-            <i class="pi pi-refresh mr-2"></i> Refresh
+        <div>
+            <h1 class="text-2xl font-bold m-0 text-primary">Dashboard Overview</h1>
+            <p class="text-500 m-0 text-sm">Welcome back! Here's what's happening today.</p>
+        </div>
+        <button (click)="loadDashboardData()" [disabled]="loading"
+            class="p-button p-button-outlined p-button-danger p-button-sm border-round-xl">
+            <i [class]="loading ? 'pi pi-spin pi-spinner mr-2' : 'pi pi-refresh mr-2'"></i>
+            Refresh
         </button>
     </div>
 
-    <div *ngIf="loading" class="text-center p-5">
-        <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
-        <p>Fetching latest data...</p>
-    </div>
-
-    <div class="grid" *ngIf="!loading">
-        <div *ngFor="let stat of stats" class="col-12 md:col-6 lg:col-3">
-            <div class="stat-card shadow-1 border-round p-3 surface-card">
-                <div class="flex justify-content-between mb-3">
-                    <div>
-                        <span class="block text-500 font-medium mb-3">{{stat.label}}</span>
-                        <div class="text-900 font-bold text-3xl">{{stat.value}}</div>
+    <div *ngIf="loading" class="fadein">
+        <div class="grid mb-4">
+            <div *ngFor="let i of [1,2,3,4]" class="col-12 md:col-6 lg:col-3">
+                <div class="surface-card shadow-1 border-round-xl p-3">
+                    <div class="flex justify-content-between mb-3">
+                        <div>
+                            <p-skeleton width="5rem" styleClass="mb-2"></p-skeleton>
+                            <p-skeleton width="3rem" height="2rem"></p-skeleton>
+                        </div>
+                        <p-skeleton shape="circle" size="3rem"></p-skeleton>
                     </div>
-                    <div [class]="'flex align-items-center justify-content-center border-round bg-' + stat.color + '-100'"
-                        style="width:3rem;height:3rem">
-                        <i [class]="stat.icon + ' text-' + stat.color + '-500 text-2xl'"></i>
+                    <p-skeleton width="100%"></p-skeleton>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="col-12 lg:col-5">
+                <div class="surface-card shadow-1 border-round-xl p-4 h-full">
+                    <p-skeleton width="10rem" height="1.5rem" styleClass="mb-4"></p-skeleton>
+                    <p-skeleton width="100%" height="350px"></p-skeleton>
+                </div>
+            </div>
+            <div class="col-12 lg:col-7">
+                <div class="surface-card shadow-1 border-round-xl p-4 h-full">
+                    <p-skeleton width="12rem" height="1.5rem" styleClass="mb-4"></p-skeleton>
+                    <div class="flex flex-column gap-3">
+                        <p-skeleton *ngFor="let i of [1,2,3]" width="100%" height="5rem"
+                            borderRadius="12px"></p-skeleton>
                     </div>
                 </div>
-                <span class="text-500 font-medium">{{stat.footer}}</span>
             </div>
         </div>
     </div>
+
+    <div *ngIf="!loading" class="fadein">
+
+        <div class="grid mb-4">
+            <div *ngFor="let stat of stats" class="col-12 md:col-6 lg:col-3">
+                <div class="stat-card shadow-1 border-round-xl p-3 surface-card border-none">
+                    <div class="flex justify-content-between mb-3">
+                        <div>
+                            <span class="block text-500 font-medium mb-3">{{stat.label}}</span>
+                            <div class="text-900 font-bold text-3xl">{{stat.value}}</div>
+                        </div>
+                        <div [class]="'flex align-items-center justify-content-center border-round-lg bg-' + stat.color + '-100'"
+                            style="width:3rem;height:3rem">
+                            <i [class]="stat.icon + ' text-' + stat.color + '-500 text-2xl'"></i>
+                        </div>
+                    </div>
+                    <div class="flex align-items-center">
+                        <span class="text-500 text-sm font-medium">{{stat.footer}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="col-12 lg:col-5">
+                <div class="surface-card shadow-1 border-round-xl p-4 h-full">
+                    <div class="flex align-items-center justify-content-between mb-4">
+                        <div class="flex align-items-center gap-2">
+                            <div class="p-2 bg-primary-100 border-round-md">
+                                <i class="pi pi-calendar text-primary text-xl"></i>
+                            </div>
+                            <h3 class="m-0 font-bold text-800">Schedule Calendar</h3>
+                        </div>
+                    </div>
+                    <div class="flex justify-content-center w-full">
+                        <p-datepicker [(ngModel)]="selectedDate" [inline]="true" [fluid]="true"
+                            styleClass="custom-dashboard-picker w-full">
+                        </p-datepicker>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 lg:col-7">
+                <div class="surface-card shadow-1 border-round-xl p-4 h-full">
+                    <div class="flex justify-content-between align-items-center mb-4">
+                        <div class="flex align-items-center gap-2">
+                            <div class="p-2 bg-orange-100 border-round-md">
+                                <i class="pi pi-list text-orange-500 text-xl"></i>
+                            </div>
+                            <h3 class="m-0 font-bold text-800">Daily Notes & Tasks</h3>
+                        </div>
+                        <p-tag [value]="upcomingSchedules.length + ' Reminders'" severity="warn"
+                            [rounded]="true"></p-tag>
+                    </div>
+
+                    <div class="flex flex-column gap-3">
+                        <div *ngFor="let task of upcomingSchedules"
+                            class="p-3 border-round-lg flex align-items-center gap-3 task-item transition-all surface-50 border-1 border-200"
+                            [style.border-left]="'6px solid ' + (task.color === 'blue' ? '#3B82F6' : '#EC4899')">
+
+                            <div class="flex-grow-1">
+                                <div class="flex justify-content-between align-items-start">
+                                    <span class="font-bold text-900 text-lg">{{task.title}}</span>
+                                    <span
+                                        class="text-xs font-bold px-2 py-1 border-round bg-white shadow-1 text-700">{{task.time}}</span>
+                                </div>
+                                <div class="text-600 font-medium mb-2">{{task.pet}}</div>
+                                <div class="flex gap-3 text-xs text-500 font-semibold">
+                                    <span class="flex align-items-center gap-1">
+                                        <i class="pi pi-tag text-xs"></i> {{task.type}}
+                                    </span>
+                                </div>
+                            </div>
+                            <button class="p-button p-button-rounded p-button-text p-button-secondary">
+                                <i class="pi pi-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- <button (click)="showAddTaskDialog()"
+                        class="p-button p-button-primary p-button-outlined w-full mt-4 border-round-lg">
+                        <i class="pi pi-plus-circle mr-2"></i> Add New Task or Note
+                    </button> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- <p-dialog header="Create New Schedule" [(visible)]="displayTaskDialog" [modal]="true"
+        [breakpoints]="{'960px': '75vw', '640px': '95vw'}" [style]="{width: '500px'}"
+        styleClass="custom-task-dialog border-round-xl" [draggable]="false" [resizable]="false">
+
+        <div class="text-center mb-4">
+            <div class="inline-flex align-items-center justify-content-center bg-blue-50 border-round-circle mb-3"
+                style="width: 4rem; height: 4rem">
+                <i class="pi pi-calendar-plus text-blue-500 text-3xl"></i>
+            </div>
+            <p class="text-600 m-0">Set up a new appointment or daily reminder.</p>
+        </div>
+
+        <div class="grid p-fluid">
+            <div class="field col-12 mb-3">
+                <label class="font-bold block mb-2 text-800">Task Title</label>
+                <p-icon-field iconPosition="left">
+                    <p-inputicon class="pi pi-pencil"></p-inputicon>
+                    <input pInputText type="text" [(ngModel)]="newTask.title" placeholder="e.g. Annual Vaccination" />
+                </p-icon-field>
+            </div>
+
+            <div class="field col-12 mb-3">
+                <label class="font-bold block mb-2 text-800">Pet Name</label>
+                <p-icon-field iconPosition="left">
+                    <p-inputicon class="pi pi-heart-fill"></p-inputicon>
+                    <input pInputText type="text" [(ngModel)]="newTask.pet" placeholder="e.g. Bruno (Husky)"
+                        class="border-round-lg" />
+                </p-icon-field>
+            </div>
+
+            <div class="field col-12 md:col-6 mb-3">
+                <label class="font-bold block mb-2 text-800">Service Type</label>
+                <select [(ngModel)]="newTask.type"
+                    class="p-inputtext w-full border-round-lg appearance-none cursor-pointer">
+                    <option value="Medical">🩺 Medical</option>
+                    <option value="Grooming">✂️ Grooming</option>
+                </select>
+            </div>
+
+            <div class="field col-12 md:col-6 mb-3">
+                <label class="font-bold block mb-2 text-800">Schedule Time</label>
+                <p-icon-field iconPosition="left">
+                    <p-inputicon class="pi pi-clock"></p-inputicon>
+                    <input pInputText type="text" [(ngModel)]="newTask.time" placeholder="09:00 AM"
+                        class="border-round-lg" />
+                </p-icon-field>
+            </div>
+        </div>
+
+        <ng-template pTemplate="footer">
+            <div class="flex gap-2 justify-content-end mt-2 pt-3 border-top-1 border-100">
+                <button pButton label="Discard" icon="pi pi-times" (click)="displayTaskDialog=false"
+                    class="p-button-text p-button-secondary border-round-lg"></button>
+                <button pButton label="Save Schedule" icon="pi pi-check" (click)="saveTask()"
+                    class="p-button-primary border-round-lg px-4 shadow-2"></button>
+            </div>
+        </ng-template>
+    </p-dialog> -->
 </div>
