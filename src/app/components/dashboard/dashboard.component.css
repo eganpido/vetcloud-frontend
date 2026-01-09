@@ -131,3 +131,10 @@ select.p-inputtext {
     background-position: right 0.75rem center;
     background-size: 1rem;
 }
+
+/* I-add kini sa imong main layout CSS */
+.dashboard-content {
+    min-height: 100vh;
+    display: block;
+    /* Ayaw pag-flex kon dili kinahanglan */
+}

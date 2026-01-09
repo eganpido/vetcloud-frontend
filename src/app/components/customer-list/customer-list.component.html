@@ -1,138 +1,111 @@
 <p-toast position="bottom-right"></p-toast>
 
-<div class="card shadow-sm p-4">
-    <div class="flex justify-content-between align-items-center mb-3">
-        <div class="flex align-items-center gap-3">
-            <p-button icon="pi pi-arrow-left" severity="secondary" [text]="true" routerLink="/dashboard"></p-button>
-            <div class="flex flex-column">
-                <h2 class="m-0 font-bold text-primary text-2xl line-height-2">Customer Directory</h2>
-                <p class="text-500 m-0 text-sm">Guardian Link: Connecting Pets with Dedicated Owners.</p>
+<div *ngIf="!viewingDetail" class="fade-in">
+    <div class="card shadow-sm p-4">
+        <div class="flex justify-content-between align-items-center mb-3">
+            <div class="flex align-items-center gap-3">
+                <p-button icon="pi pi-arrow-left" severity="secondary" [text]="true" routerLink="/dashboard"></p-button>
+                <div class="flex flex-column">
+                    <h2 class="m-0 font-bold text-primary text-2xl line-height-2">Customer Directory</h2>
+                    <p class="text-500 m-0 text-sm">Guardian Link: Connecting Pets with Dedicated Owners.</p>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <p-button label="Export" icon="pi pi-file-excel" (onClick)="exportToExcel()" styleClass="purple-button"
+                    [disabled]="loading">
+                </p-button>
+                <p-button label="Add Customer" icon="pi pi-plus" (onClick)="openCreate()"
+                    [disabled]="loading"></p-button>
             </div>
         </div>
-        <div class="flex gap-2">
-            <p-button label="Export" icon="pi pi-file-excel" (onClick)="exportToExcel()" styleClass="purple-button">
-            </p-button>
-            <p-button label="Add Customer" icon="pi pi-plus" (onClick)="showDialog()"></p-button>
+
+        <div class="mb-4">
+            <p-icon-field iconPosition="left">
+                <p-inputicon class="pi pi-search"></p-inputicon>
+                <input pInputText type="text" (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                    placeholder="Search customers..." class="w-full p-inputtext-md" [disabled]="loading" />
+            </p-icon-field>
         </div>
-    </div>
 
-    <div class="mb-4">
-        <span class="p-input-icon-left w-full">
-            <i class="pi pi-search"></i>
-            <input pInputText type="text" (input)="dt.filterGlobal($any($event.target).value, 'contains')"
-                placeholder="Search customers..." class="w-full p-inputtext-md" />
-        </span>
-    </div>
+        <p-table #dt [value]="loading ? skeletonRows : customers" [paginator]="!loading" responsiveLayout="stack"
+            [breakpoint]="'960px'" [rows]="10" [rowsPerPageOptions]="[5, 10, 20]" appendTo="body"
+            [paginatorDropdownAppendTo]="'body'"
+            [globalFilterFields]="['code', 'customerName', 'customerAdress', 'contactNumber']"
+            exportFilename="customer_list" styleClass="p-datatable-customers" [rowHover]="true"
+            [showCurrentPageReport]="!loading"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
 
-    <p-table #dt [value]="customers" [paginator]="true" responsiveLayout="stack" [breakpoint]="'960px'" [rows]="10"
-        [rowsPerPageOptions]="[5, 10, 20]"
-        [globalFilterFields]="['code', 'customerName', 'customerAdress', 'contactNumber']"
-        exportFilename="customer_list" styleClass="p-datatable-customers" [rowHover]="true"
-        [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="code">Code <p-sortIcon field="code" *ngIf="!loading"></p-sortIcon></th>
+                    <th pSortableColumn="customerName">Customer Name <p-sortIcon field="customerName"
+                            *ngIf="!loading"></p-sortIcon></th>
+                    <th pSortableColumn="customerAdress">Address <p-sortIcon field="customerAdress"
+                            *ngIf="!loading"></p-sortIcon></th>
+                    <th pSortableColumn="contactNumber">Contact <p-sortIcon field="contactNumber"
+                            *ngIf="!loading"></p-sortIcon></th>
+                    <th class="text-center">Status</th>
+                    <th class="text-center" style="width: 120px">Action</th>
+                </tr>
+            </ng-template>
 
-        <ng-template pTemplate="header">
-            <tr>
-                <th pSortableColumn="code" field="code">
-                    <div class="flex align-items-center">
-                        Code <p-sortIcon field="code"></p-sortIcon>
-                    </div>
-                </th>
+            <ng-template pTemplate="body" let-customer>
+                <tr *ngIf="loading">
+                    <td><p-skeleton width="70%" height="1.2rem"></p-skeleton></td>
+                    <td><p-skeleton width="90%" height="1.2rem"></p-skeleton></td>
+                    <td><p-skeleton width="85%" height="1.2rem"></p-skeleton></td>
+                    <td><p-skeleton width="60%" height="1.2rem"></p-skeleton></td>
+                    <td class="text-center"><p-skeleton shape="circle" size="2rem"
+                            styleClass="inline-block"></p-skeleton></td>
+                    <td class="text-center">
+                        <div class="flex gap-2 justify-content-center">
+                            <p-skeleton shape="circle" size="2.5rem"></p-skeleton>
+                            <p-skeleton shape="circle" size="2.5rem"></p-skeleton>
+                        </div>
+                    </td>
+                </tr>
 
-                <th pSortableColumn="customerName" field="customerName">
-                    <div class="flex align-items-center">
-                        Customer Name <p-sortIcon field="customerName"></p-sortIcon>
-                    </div>
-                </th>
+                <tr *ngIf="!loading" class="customer-row">
+                    <td><i class="pi pi-tag mr-2"></i>{{ customer.code }}</td>
+                    <td><i class="pi pi-user mr-2"></i>{{ customer.customerName }}</td>
+                    <td><i class="pi pi-map-marker text-400 mr-2"></i>{{ customer.customerAdress }}</td>
+                    <td><i class="pi pi-phone text-400 mr-2"></i>{{ customer.contactNumber }}</td>
+                    <td class="text-center">
+                        <p-tag [severity]="customer.isLocked ? 'danger' : 'success'"
+                            [value]="customer.isLocked ? 'Locked' : 'Unlocked'" [rounded]="true">
+                        </p-tag>
+                    </td>
+                    <td class="text-center">
+                        <div class="flex gap-2 justify-content-center">
+                            <button pButton icon="pi pi-eye" class="p-button-rounded p-button-text custom-edit-btn"
+                                (click)="viewDetail(customer)" pTooltip="View Details" tooltipPosition="top">
+                            </button>
+                            <button pButton icon="pi pi-trash"
+                                class="p-button-rounded p-button-text p-button-danger custom-delete-btn"
+                                (click)="handleDelete(customer)" [disabled]="customer.isLocked"
+                                [pTooltip]="customer.isLocked ? 'Locked' : 'Delete'" tooltipPosition="top">
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
 
-                <th pSortableColumn="customerAdress" field="customerAdress">
-                    <div class="flex align-items-center">
-                        Address <p-sortIcon field="customerAdress"></p-sortIcon>
-                    </div>
-                </th>
-
-                <th pSortableColumn="contactNumber" field="contactNumber">
-                    <div class="flex align-items-center">
-                        Contact <p-sortIcon field="contactNumber"></p-sortIcon>
-                    </div>
-                </th>
-
-                <th class="text-center" style="width: 150px">Actions</th>
-            </tr>
-        </ng-template>
-
-        <ng-template pTemplate="body" let-customer>
-            <tr class="customer-row">
-                <td>
-                    {{ customer.code }}
-                </td>
-
-                <td>
-                    <span class="customer-name-text">
-                        {{ customer.customerName }}
-                    </span>
-                </td>
-                <td><i class="pi pi-map-marker text-400 mr-2"></i>{{ customer.customerAdress }}</td>
-                <td><i class="pi pi-phone text-400 mr-2"></i>{{ customer.contactNumber }}</td>
-                <td class="text-center">
-                    <div class="flex gap-3 justify-content-center">
-                        <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text custom-edit-btn"
-                            (click)="editCustomer(customer)" pTooltip="Edit Customer" tooltipPosition="top">
-                        </button>
-
-                        <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text custom-delete-btn"
-                            (click)="deleteCustomer(customer)" pTooltip="Delete Customer" tooltipPosition="top">
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        </ng-template>
-
-        <ng-template pTemplate="emptymessage">
-            <tr>
-                <td colspan="5" class="empty-state">
-                    <div class="flex flex-column align-items-center justify-content-center p-5">
+            <ng-template pTemplate="emptymessage">
+                <tr *ngIf="!loading">
+                    <td colspan="6" class="empty-state text-center p-5">
                         <i class="pi pi-database text-600 mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
-                        <span class="text-xl font-medium text-600">No Customers Found</span>
-                    </div>
-                </td>
-            </tr>
-        </ng-template>
-    </p-table>
+                        <div class="text-xl font-medium text-600">No Customers Found</div>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<div *ngIf="viewingDetail" class="fade-in">
+    <app-customer-detail [customer]="selectedCustomer" [isEditMode]="isEdit" (onBack)="viewingDetail = false"
+        (onSave)="handleSave($event)" (onLock)="handleLock($event)" (onUnlock)="handleUnlock($event)">
+    </app-customer-detail>
 </div>
 
 <p-confirmDialog></p-confirmDialog>
-
-<p-dialog [header]="isEditMode ? 'Edit Customer Details' : 'New Customer Details'" [(visible)]="displayDialog"
-    [modal]="true" [style]="{width: '650px'}" class="p-fluid">
-
-    <ng-template pTemplate="content">
-        <div class="field mb-3">
-            <label for="code" class="block font-bold mb-1">Customer Code</label>
-            <input type="text" pInputText id="code" [(ngModel)]="newCustomer.code" placeholder="Code" class="w-10rem"
-                [disabled]="false" required />
-        </div>
-
-        <div class="field mb-3">
-            <label for="name" class="block font-bold mb-1">Customer Name</label>
-            <input type="text" pInputText id="name" [(ngModel)]="newCustomer.customerName" placeholder="Full Name"
-                class="w-full" required />
-        </div>
-
-        <div class="field mb-3">
-            <label for="address" class="block font-bold mb-1">Address</label>
-            <input type="text" pInputText id="address" [(ngModel)]="newCustomer.customerAdress" placeholder="Address"
-                class="w-full" required />
-        </div>
-
-        <div class="field mb-3">
-            <label for="phone" class="block font-bold mb-1">Contact No.</label>
-            <input type="text" pInputText id="phone" [(ngModel)]="newCustomer.contactNumber"
-                placeholder="Contact Number" class="w-full" required />
-        </div>
-    </ng-template>
-
-    <ng-template pTemplate="footer">
-        <p-button label="Cancel" icon="pi pi-times" (onClick)="displayDialog = false" severity="danger"></p-button>
-        <p-button label="Save" icon="pi pi-check" (onClick)="saveCustomer()"></p-button>
-    </ng-template>
-</p-dialog>

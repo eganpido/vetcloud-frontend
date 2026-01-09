@@ -16,22 +16,32 @@ export class CustomerService {
         return this.http.get<any[]>(`${this.apiUrl}/all`);
     }
 
-    // 2. Pag-add og bag-ong customer
+    // 2. Pag-save og bag-ong customer (Default isLocked = false)
     createCustomer(customer: any): Observable<any> {
-        return this.http.post<any>(`${this.apiUrl}/add`, customer);
+        return this.http.post<any>(`${this.apiUrl}/save`, customer);
     }
 
-    // 3. Pag-update sa existing customer
-    // Gigamit nato ang 'code' isip unique identifier
-    updateCustomer(code: string, customer: any): Observable<any> {
-        return this.http.put<any>(`${this.apiUrl}/update/${code}`, customer);
+    // 3. Pag-update sa existing customer gamit ang MongoDB _id
+    updateCustomer(id: string, customer: any): Observable<any> {
+        return this.http.put<any>(`${this.apiUrl}/update/${id}`, customer);
     }
 
-    // 4. Pag-delete sa customer
-    deleteCustomer(code: string): Observable<any> {
-        return this.http.delete<any>(`${this.apiUrl}/delete/${code}`);
+    // 4. Pag-delete sa customer gamit ang MongoDB _id
+    deleteCustomer(customerId: number): Observable<any> {
+        return this.http.delete<any>(`${this.apiUrl}/delete/${customerId}`, {});
     }
 
+    // 5. Pag-Lock (Mao ni ang replicate sa save pero true ang isLocked)
+    lockCustomer(customerId: string): Observable<any> {
+        return this.http.put<any>(`${this.apiUrl}/lock/${customerId}`, {});
+    }
+
+    // 6. Pag-Unlock (I-toggle balik sa false ang isLocked field)
+    unlockCustomer(customerId: string): Observable<any> {
+        return this.http.put<any>(`${this.apiUrl}/unlock/${customerId}`, {});
+    }
+
+    // Dashboard Statistics
     getDashboardStats(): Observable<any> {
         return this.http.get(`${this.apiUrl}/stats`);
     }

@@ -7,11 +7,18 @@ import { CustomerService } from '../../services/customer.service';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { DialogModule } from 'primeng/dialog';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { RouterLink } from '@angular/router';
+import { TagModule } from 'primeng/tag';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { TooltipModule } from 'primeng/tooltip';
+import { SkeletonModule } from 'primeng/skeleton';
+
+// Detail Component
+import { CustomerDetailComponent } from '../customer-detail/customer-detail.component';
 
 @Component({
   selector: 'app-customer-list',
@@ -22,10 +29,15 @@ import { RouterLink } from '@angular/router';
     TableModule,
     ButtonModule,
     InputTextModule,
-    DialogModule,
     ConfirmDialogModule,
     ToastModule,
-    RouterLink
+    RouterLink,
+    TagModule,
+    IconFieldModule,
+    InputIconModule,
+    TooltipModule,
+    SkeletonModule,
+    CustomerDetailComponent
   ],
   providers: [ConfirmationService],
   templateUrl: './customer-list.component.html',
@@ -33,15 +45,13 @@ import { RouterLink } from '@angular/router';
 })
 export class CustomerListComponent implements OnInit {
   customers: any[] = [];
-  displayDialog: boolean = false;
-  isEditMode: boolean = false;
+  loading: boolean = true;
+  skeletonRows = Array(10).fill({});
 
-  newCustomer: any = {
-    code: '',
-    customerName: '',
-    customerAdress: '',
-    contactNumber: ''
-  };
+  // View Control
+  viewingDetail: boolean = false;
+  isEdit: boolean = false;
+  selectedCustomer: any = {};
 
   constructor(
     private customerService: CustomerService,
@@ -54,174 +64,187 @@ export class CustomerListComponent implements OnInit {
   }
 
   loadCustomers() {
+    this.loading = true;
     this.customerService.getCustomers().subscribe({
       next: (data: any) => {
         this.customers = data;
+        setTimeout(() => { this.loading = false; }, 500);
       },
-      error: (err: any) => console.error('Error loading data:', err)
+      error: (err: any) => {
+        console.error('Error loading data:', err);
+        this.loading = false;
+        this.showError('Failed to fetch customers');
+      }
     });
   }
 
-  showDialog() {
-    this.isEditMode = false;
-    this.newCustomer = { code: '', customerName: '', customerAdress: '', contactNumber: '' };
-    this.displayDialog = true;
+  // --- VIEW LOGIC ---
+
+  openCreate() {
+    this.selectedCustomer = { code: '', customerName: '', customerAdress: '', contactNumber: '', isLocked: false };
+    this.isEdit = false;
+    this.viewingDetail = true;
   }
 
-  editCustomer(customer: any) {
-    this.isEditMode = true;
-    this.newCustomer = { ...customer };
-    this.displayDialog = true;
+  viewDetail(customer: any) {
+    this.selectedCustomer = { ...customer };
+    this.isEdit = true;
+    this.viewingDetail = true;
   }
 
-  saveCustomer() {
-    // 1. Basic Validation: Check kon naay sulod ang gikinahanglan nga fields
-    if (!this.newCustomer.code || !this.newCustomer.customerName) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Validation Error',
-        detail: 'Please fill in Customer code and name.'
-      });
-      return;
-    }
+  // --- ACTIONS ---
+  handleSave(customerData: any) {
+    if (this.isEdit) {
+      // UPDATE EXISTING RECORD
+      this.customerService.updateCustomer(customerData._id, customerData).subscribe({
+        next: (updatedRes: any) => {
+          this.showSuccess('Customer updated successfully');
 
-    // 2. Duplicate Validation: Check kon ang code gigamit na sa uban
-    // Atong i-check sa local array 'this.customers' para paspas
-    const isDuplicate = this.customers.some(c =>
-      c.code.toLowerCase() === this.newCustomer.code.toLowerCase() &&
-      c._id !== this.newCustomer._id // Ayaw i-check ang kaugalingon kon Edit mode
-    );
+          // PABILIN SA PAGE: 
+          // I-update lang nato ang local object aron sigurado nga fresh ang data sa UI
+          this.selectedCustomer = { ...customerData };
 
-    if (isDuplicate) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Duplicate Code',
-        detail: `The code "${this.newCustomer.code}" has already been used. Please use another code.`
-      });
-      return; // Hunongon ang save process
-    }
-
-    // 3. API CALLS
-    if (this.isEditMode) {
-      this.customerService.updateCustomer(this.newCustomer._id || this.newCustomer.code, this.newCustomer).subscribe({
-        next: (res: any) => {
+          // (Optional) I-refresh ang listahan sa background para inig click sa "Back", 
+          // updated na ang table.
           this.loadCustomers();
-          this.displayDialog = false;
-          // TOAST: SUCCESS UPDATE
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Customer details updated successfully!'
-          });
         },
-        error: (err: any) => {
-          console.error('Update failed:', err);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Update failed.' });
-        }
+        error: (err) => this.showError('Update failed')
       });
     } else {
-      this.customerService.createCustomer(this.newCustomer).subscribe({
-        next: (res: any) => {
-          this.loadCustomers();
-          this.displayDialog = false;
-          // TOAST: SUCCESS CREATE
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'New customer added successfully!'
-          });
+      // CREATE NEW RECORD
+      this.customerService.createCustomer(customerData).subscribe({
+        next: (newCustomer: any) => {
+          this.showSuccess('New customer saved');
+
+          // PABILIN SA PAGE:
+          // Importante: I-assign ang bag-ong ID gikan sa server ngadto sa selectedCustomer
+          // aron ma-enable ang "Lock" button (kay [disabled]="!customer._id" man to)
+          this.selectedCustomer = { ...newCustomer };
+          this.isEdit = true; // Usba ang mode ngadto sa Edit mode
+
+          this.loadCustomers(); // Refresh list background
         },
-        error: (err: any) => {
-          console.error('Save failed:', err);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Save failed.' });
-        }
+        error: (err) => this.showError('Save failed')
       });
     }
   }
 
-  deleteCustomer(customer: any) {
+  handleBack() {
+    this.loadCustomers();
+    this.viewingDetail = false;
+  }
+
+  handleLock(customerData: any) {
+    console.log('Row Data:', customerData);
+
     this.confirmationService.confirm({
-      message: `Confirm delete for ${customer.customerName}?`,
-      header: 'Delete Confirmation',
-      icon: 'pi pi-exclamation-triangle',
-
-      // Labels
-      acceptLabel: 'Yes, Confirm',
-      rejectLabel: 'No',
-
-      // KINI ANG ATONG USBON NGA COLORS:
+      message: 'Are you sure you want to LOCK this record?',
+      header: 'Lock Confirmation',
+      icon: 'pi pi-lock',
+      acceptLabel: 'Yes, Lock it',
+      rejectLabel: 'No, Cancel',
       acceptButtonStyleClass: 'p-button-primary',
       rejectButtonStyleClass: 'p-button-danger',
-
       accept: () => {
-        this.customerService.deleteCustomer(customer._id || customer.code).subscribe({
-          next: () => {
-            this.customers = this.customers.filter(c => c.code !== customer.code);
-            this.displayDialog = false;
-            this.messageService.add({
-              severity: 'success',
-              summary: 'Success',
-              detail: 'Customer deleted successfully!'
-            });
+        this.customerService.lockCustomer(customerData.customerId).subscribe({
+          next: (res: any) => {
+            customerData.isLocked = true;
+            if (this.selectedCustomer && this.selectedCustomer.customerId === customerData.customerId) {
+              this.selectedCustomer.isLocked = true;
+            }
+            this.showSuccess('Record locked successfully');
+            this.loadCustomers();
           },
-          error: (err: any) => console.error('Delete failed:', err)
+          error: (err: any) => {
+            console.error('Server Error:', err);
+            this.showError('Locking failed');
+          }
+        });
+      }
+    });
+  }
+
+  handleUnlock(customerData: any) {
+    this.customerService.unlockCustomer(customerData.customerId).subscribe({
+      next: (res: any) => {
+        this.selectedCustomer.isLocked = false;
+        this.showSuccess('Record unlocked successfully');
+        this.loadCustomers();
+      },
+      error: (err: any) => {
+        console.error(err);
+        this.showError('Unlocking failed');
+      }
+    });
+  }
+
+  handleDelete(customerData: any) {
+    this.confirmationService.confirm({
+      message: `Confirm delete for ${customerData.customerName}?`,
+      header: 'Delete Confirmation',
+      icon: 'pi pi-trash',
+      acceptButtonStyleClass: 'p-button-primary',
+      rejectButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        // Pasa ang customerId (e.g., 1, 2, 3)
+        this.customerService.deleteCustomer(customerData.customerId).subscribe({
+          next: () => {
+            // I-remove sa listahan gamit ang customerId
+            this.customers = this.customers.filter(c => c.customerId !== customerData.customerId);
+            this.showSuccess('Deleted successfully');
+          },
+          error: (err: any) => {
+            console.error("Delete failed:", err);
+            this.showError('Delete failed');
+          }
         });
       }
     });
   }
 
   exportToExcel() {
-    // 1. Siguraduhon nga naay data aron dili mo-error ang exportData[0]
     if (!this.customers || this.customers.length === 0) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'No Data',
-        detail: 'No record(s) to export.'
-      });
+      this.messageService.add({ severity: 'warn', summary: 'No Data', detail: 'No record(s) to export.' });
       return;
     }
 
-    // 2. I-prepare ang data (Friendly Headers + Data Cleaning)
     const exportData = this.customers.map(c => ({
       'Customer Code': c.code || '',
       'Customer Name': c.customerName || '',
       'Address': c.customerAdress || '',
-      'Contact Number': c.contactNumber || ''
+      'Contact Number': c.contactNumber || '',
+      'Status': c.isLocked ? 'Locked' : 'Unlocked'
     }));
 
-    // 3. I-convert ngadto sa CSV format
     const header = Object.keys(exportData[0]);
     const csvRows = exportData.map(row =>
       header.map(fieldName => {
         const value = (row as any)[fieldName];
-        // I-escape ang double quotes ug i-wrap sa quotes para dili maguba ang columns kon naay comma (,)
         const escaped = ('' + value).replace(/"/g, '""');
         return `"${escaped}"`;
       }).join(',')
     );
 
-    // I-add ang header sa pinakataas
     csvRows.unshift(header.join(','));
     const csvString = csvRows.join('\r\n');
-
-    // 4. I-download ang file (Gi-handle ang UTF-8 para sa special characters)
     const blob = new Blob(['\ufeff' + csvString], { type: 'text/csv;charset=utf-8;' });
     const url = window.URL.createObjectURL(blob);
-
     const link = document.createElement('a');
     link.setAttribute('href', url);
     link.setAttribute('download', `Customer_List_${new Date().getTime()}.csv`);
     link.style.visibility = 'hidden';
-
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
-    // 5. Feedback sa user
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Export Success',
-      detail: 'Exported successfully.'
-    });
+    this.showSuccess('Exported successfully');
+  }
+
+  private showSuccess(msg: string) {
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: msg });
+  }
+
+  private showError(msg: string) {
+    this.messageService.add({ severity: 'error', summary: 'Error', detail: msg });
   }
 }

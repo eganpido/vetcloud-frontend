@@ -209,3 +209,14 @@ footer {
     background-color: #ffffff;
     z-index: 10;
 }
+
+/* Custom size nga mas gamay kaysa sa default */
+:host ::ng-deep .custom-small-avatar {
+    width: 2.2rem !important;
+    height: 2.2rem !important;
+}
+
+/* I-center ang icon sa sulod */
+:host ::ng-deep .custom-small-avatar .p-avatar-icon {
+    font-size: 1rem !important;
+}

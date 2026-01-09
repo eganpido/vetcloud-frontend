@@ -123,72 +123,8 @@
                             </button>
                         </div>
                     </div>
-
-                    <!-- <button (click)="showAddTaskDialog()"
-                        class="p-button p-button-primary p-button-outlined w-full mt-4 border-round-lg">
-                        <i class="pi pi-plus-circle mr-2"></i> Add New Task or Note
-                    </button> -->
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- <p-dialog header="Create New Schedule" [(visible)]="displayTaskDialog" [modal]="true"
-        [breakpoints]="{'960px': '75vw', '640px': '95vw'}" [style]="{width: '500px'}"
-        styleClass="custom-task-dialog border-round-xl" [draggable]="false" [resizable]="false">
-
-        <div class="text-center mb-4">
-            <div class="inline-flex align-items-center justify-content-center bg-blue-50 border-round-circle mb-3"
-                style="width: 4rem; height: 4rem">
-                <i class="pi pi-calendar-plus text-blue-500 text-3xl"></i>
-            </div>
-            <p class="text-600 m-0">Set up a new appointment or daily reminder.</p>
-        </div>
-
-        <div class="grid p-fluid">
-            <div class="field col-12 mb-3">
-                <label class="font-bold block mb-2 text-800">Task Title</label>
-                <p-icon-field iconPosition="left">
-                    <p-inputicon class="pi pi-pencil"></p-inputicon>
-                    <input pInputText type="text" [(ngModel)]="newTask.title" placeholder="e.g. Annual Vaccination" />
-                </p-icon-field>
-            </div>
-
-            <div class="field col-12 mb-3">
-                <label class="font-bold block mb-2 text-800">Pet Name</label>
-                <p-icon-field iconPosition="left">
-                    <p-inputicon class="pi pi-heart-fill"></p-inputicon>
-                    <input pInputText type="text" [(ngModel)]="newTask.pet" placeholder="e.g. Bruno (Husky)"
-                        class="border-round-lg" />
-                </p-icon-field>
-            </div>
-
-            <div class="field col-12 md:col-6 mb-3">
-                <label class="font-bold block mb-2 text-800">Service Type</label>
-                <select [(ngModel)]="newTask.type"
-                    class="p-inputtext w-full border-round-lg appearance-none cursor-pointer">
-                    <option value="Medical">🩺 Medical</option>
-                    <option value="Grooming">✂️ Grooming</option>
-                </select>
-            </div>
-
-            <div class="field col-12 md:col-6 mb-3">
-                <label class="font-bold block mb-2 text-800">Schedule Time</label>
-                <p-icon-field iconPosition="left">
-                    <p-inputicon class="pi pi-clock"></p-inputicon>
-                    <input pInputText type="text" [(ngModel)]="newTask.time" placeholder="09:00 AM"
-                        class="border-round-lg" />
-                </p-icon-field>
-            </div>
-        </div>
-
-        <ng-template pTemplate="footer">
-            <div class="flex gap-2 justify-content-end mt-2 pt-3 border-top-1 border-100">
-                <button pButton label="Discard" icon="pi pi-times" (click)="displayTaskDialog=false"
-                    class="p-button-text p-button-secondary border-round-lg"></button>
-                <button pButton label="Save Schedule" icon="pi pi-check" (click)="saveTask()"
-                    class="p-button-primary border-round-lg px-4 shadow-2"></button>
-            </div>
-        </ng-template>
-    </p-dialog> -->
 </div>

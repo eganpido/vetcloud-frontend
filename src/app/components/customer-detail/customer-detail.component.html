@@ -1,0 +1,66 @@
+<div class="card p-3 md:p-4 shadow-2 bg-white border-round-xl">
+    <div
+        class="flex flex-column md:flex-row align-items-start md:align-items-center justify-content-between mb-4 gap-3">
+        <div class="flex flex-column">
+            <h2 class="m-0 font-bold text-primary text-xl md:text-2xl">Customer Profile</h2>
+            <p class="text-500 m-0 text-sm">Manage customer information and security status.</p>
+        </div>
+        <p-tag [value]="customer.isLocked ? 'LOCKED' : 'UNLOCKED'" [severity]="customer.isLocked ? 'danger' : 'success'"
+            [icon]="customer.isLocked ? 'pi pi-lock' : 'pi pi-check-circle'" class="w-fit">
+        </p-tag>
+    </div>
+
+    <div class="grid p-fluid">
+        <div class="field col-12 md:col-3 lg:col-2 mb-3">
+            <label class="block font-semibold mb-2 text-700">Code</label>
+            <p-icon-field iconPosition="left">
+                <p-inputicon class="pi pi-tag"></p-inputicon>
+                <input pInputText [(ngModel)]="customer.code" [disabled]="customer.isLocked" placeholder="C000001" />
+            </p-icon-field>
+        </div>
+
+        <div class="field col-12 md:col-10 mb-3 md:pl-6">
+            <label class="block font-semibold mb-2 text-700">Full Name</label>
+            <p-icon-field iconPosition="left">
+                <p-inputicon class="pi pi-user"></p-inputicon>
+                <input pInputText [(ngModel)]="customer.customerName" [disabled]="customer.isLocked"
+                    placeholder="Full Name" style="width: 30%; min-width: 300px;" />
+            </p-icon-field>
+        </div>
+
+        <div class="field col-12 md:col-6 lg:col-5 mb-3">
+            <label class="block font-semibold mb-2 text-700">Contact Number</label>
+            <p-icon-field iconPosition="left">
+                <p-inputicon class="pi pi-phone"></p-inputicon>
+                <input pInputText [(ngModel)]="customer.contactNumber" [disabled]="customer.isLocked"
+                    placeholder="09123456789" />
+            </p-icon-field>
+        </div>
+
+        <div class="field col-12 md:col-11 mb-3">
+            <label class="block font-semibold mb-2 text-700">Address</label>
+            <textarea pTextarea rows="4" [(ngModel)]="customer.customerAdress" [disabled]="customer.isLocked"
+                [autoResize]="true" placeholder="House No., Street, Brgy, City, Province" class="shadow-sm w-full">
+            </textarea>
+        </div>
+    </div>
+
+    <div
+        class="flex flex-column md:flex-row justify-content-between align-items-stretch md:align-items-center mt-5 pt-4 border-top-1 border-gray-100 gap-3">
+        <div class="flex">
+            <p-button label="Save Changes" icon="pi pi-save" severity="primary" (onClick)="save()"
+                [disabled]="customer.isLocked" class="w-full md:w-auto"></p-button>
+        </div>
+
+        <div class="flex flex-column md:flex-row gap-2">
+            <p-button label="Lock" icon="pi pi-lock" severity="primary" (onClick)="lock()"
+                [disabled]="customer.isLocked || !customer.customerId" class="w-full md:w-auto"></p-button>
+
+            <p-button label="Unlock" icon="pi pi-lock-open" severity="primary" (onClick)="unlock()"
+                [disabled]="!customer.isLocked" class="w-full md:w-auto"></p-button>
+
+            <p-button label="Back" icon="pi pi-list" severity="danger" (onClick)="back()"
+                class="w-full md:w-auto"></p-button>
+        </div>
+    </div>
+</div>

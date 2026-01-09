@@ -15,7 +15,7 @@
             <div class="flex flex-column gap-2">
                 <label class="font-bold text-700">Username</label>
                 <p-iconField iconPosition="left">
-                    <input pInputText type="text" placeholder="username" class="w-full p-inputtext-md"
+                    <input pInputText type="text" placeholder="Username" class="w-full p-inputtext-md"
                         [(ngModel)]="loginData.username" />
                     <p-inputIcon class="pi pi-user"></p-inputIcon>
                 </p-iconField>
@@ -23,7 +23,7 @@
 
             <div class="flex flex-column gap-2">
                 <label class="font-bold text-700">Password</label>
-                <p-password [toggleMask]="true" [feedback]="false" placeholder="password" styleClass="w-full"
+                <p-password [toggleMask]="true" [feedback]="false" placeholder="••••••••" styleClass="w-full"
                     inputStyleClass="w-full p-inputtext-md" [(ngModel)]="loginData.password">
                 </p-password>
             </div>
@@ -43,8 +43,8 @@
                 </div>
             </div>
 
-            <p-button label="Sign In" icon="pi pi-sign-in" styleClass="w-full p-button-lg" (onClick)="onLogin()"
-                [loading]="loading">
+            <p-button label="Sign In" icon="pi pi-arrow-circle-right" styleClass="w-full p-button-lg"
+                (onClick)="onLogin()" [loading]="loading">
             </p-button>
         </div>
 

@@ -32,3 +32,30 @@ th {
     border: none;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
 }
+
+/* I-force ang PrimeNG Dropdown Panel nga mosaka pataas kon kini i-append sa body */
+body .p-dropdown-panel {
+    margin-top: -200px !important;
+    /* I-adjust kini base sa height sa dropdown */
+    /* O mas maayo kining paagi sa ubos: */
+    transform: translateY(-110%) !important;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Para sa PrimeNG 21 Dropdown Panel */
+body .p-select-panel,
+/* Bag-ong class sa v18/19+ */
+body .p-dropdown-panel {
+    top: auto !important;
+    bottom: 0 !important;
+    /* I-align ang bottom sa panel sa ibabaw sa paginator button */
+    transform: translateY(-45px) !important;
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Siguraduha nga ang animation dili mo-flicker o mobalik paubos */
+body .p-connected-overlay-enter-done {
+    top: auto !important;
+    bottom: 0 !important;
+    transform: translateY(-45px) !important;
+}
