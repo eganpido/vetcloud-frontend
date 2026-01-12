@@ -1,0 +1,90 @@
+/* Custom styling para sa input groups */
+.p-inputgroup .p-inputgroup-addon {
+    border: none;
+    min-width: 3.5rem;
+}
+
+.p-inputtext {
+    border: 1px solid #dee2e6;
+    transition: all 0.2s ease;
+}
+
+.p-inputtext.p-disabled,
+.p-inputtext:disabled,
+input[pInputText]:disabled {
+    background-color: #cdcdcd !important;
+    color: #656464 !important;
+    opacity: 0.8 !important;
+    border: 1px solid #ced4da !important;
+    -webkit-text-fill-color: #2b2f33 !important;
+}
+
+/* Siguroha nga inig hover dili gihapon mausab ang background */
+.p-inputtext.p-disabled:hover {
+    background-color: #cdcdcd !important;
+    border-color: #ced4da !important;
+}
+
+/* Para mawala ang light blue tint sa ubang browsers */
+input:disabled {
+    -webkit-text-fill-color: #495057;
+    background-color: #9b9797 !important;
+}
+
+/* Label style */
+label {
+    font-size: 0.875rem;
+    letter-spacing: 0.02em;
+}
+
+/* Standard state sa border */
+.custom-border {
+    border: 2px solid #d1d5db !important;
+    /* Klaro nga gray border */
+    transition: all 0.2s ease-in-out;
+}
+
+/* Inig i-click o i-focus ang input */
+.custom-border:enabled:focus {
+    border-color: #3b82f6 !important;
+    /* Blue border kung active */
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1) !important;
+    outline: none;
+}
+
+/* Inig Locked/Disabled ang input */
+.custom-border:disabled {
+    border: 2px solid #e5e7eb !important;
+    /* Mas light nga gray border */
+    background-color: #f9fafb !important;
+    color: #9ca3af !important;
+    cursor: not-allowed;
+}
+
+/* I-fix ang Input Group Addon para mag-match sa border */
+:host ::ng-deep .p-inputgroup-addon {
+    border: 2px solid #d1d5db;
+    border-right: none;
+}
+
+.custom-dialog .p-dialog-header .p-dialog-title {
+    color: #3b82f6 !important;
+    /* I-hardcode ang blue/primary color aron sigurado */
+    font-weight: bold !important;
+}
+
+.fadein {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

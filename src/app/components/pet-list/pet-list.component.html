@@ -1,0 +1,155 @@
+<div>
+    <div class="flex justify-content-between align-items-center mb-4">
+        <div class="flex flex-column">
+            <h2 class="m-0 font-bold text-primary text-xl md:text-2xl">Pet Directory</h2>
+            <p-skeleton *ngIf="loading" width="12rem" height="1rem" styleClass="mt-2"></p-skeleton>
+            <p *ngIf="!loading" class="text-500 m-0 text-sm hidden sm:block">
+                Manage all registered animals under this account.
+            </p>
+        </div>
+        <button pButton label="Add Pet" icon="pi pi-plus" class="p-button-primary border-round-lg"
+            (click)="openCreate()"></button>
+    </div>
+
+    <div *ngIf="loading" class="grid">
+        <div *ngFor="let i of [1,2,3,4]" class="col-12 md:col-6 lg:col-3 p-2">
+            <div class="surface-card p-4 border-round-xl border-1 border-100">
+                <p-skeleton shape="circle" size="3rem" class="mb-3"></p-skeleton>
+                <p-skeleton width="80%" class="mb-2"></p-skeleton>
+                <p-skeleton width="50%"></p-skeleton>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="!loading && pets.length > 0" class="grid">
+        <div *ngFor="let pet of pets" class="col-12 md:col-6 lg:col-3 p-2">
+            <div
+                class="pet-card surface-card p-3 shadow-1 border-round-xl border-1 border-50 hover:shadow-4 transition-all transition-duration-300 h-full flex flex-column">
+
+                <div class="flex justify-content-between align-items-start mb-3">
+                    <div class="bg-blue-50 p-2 border-circle">
+                        <i class="text-2xl pi pi-heart-fill text-red-500"></i>
+                    </div>
+                    <p-tag [value]="pet.isLocked ? 'Active' : 'Inactive'"
+                        [severity]="pet.isLocked ? 'success' : 'danger'" [rounded]="true"></p-tag>
+                </div>
+
+                <div class="mb-4 flex-grow-1">
+                    <span class="block text-xl font-bold text-800">{{ pet.petName }}</span>
+                    <span class="text-500 text-sm font-medium">{{ pet.breed || 'Unknown Breed' }}</span>
+                </div>
+
+                <div class="flex gap-2">
+                    <button pButton icon="pi pi-eye" label="View"
+                        class="p-button-primary p-button-sm flex-grow-1 border-round-lg shadow-sm"
+                        (click)="viewDetail(pet)">
+                    </button>
+
+                    <button pButton icon="pi pi-trash"
+                        class="p-button-text p-button-danger p-button-sm custom-delete-btn" [disabled]="pet.isLocked"
+                        (click)="handleDelete(pet)">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="!loading && pets.length === 0"
+        class="flex align-items-center justify-content-center w-full min-h-20rem mt-8 fadein font-family">
+
+        <div class="flex flex-column align-items-center text-center">
+            <div class="relative flex align-items-center justify-content-center mb-4"
+                style="width: 120px; height: 120px;">
+                <div class="absolute border-circle bg-gray-100 w-full h-full opacity-60"></div>
+
+                <i class="pi pi-search text-400 text-6xl z-1"></i>
+
+                <div class="absolute bg-primary text-white border-circle flex align-items-center justify-content-center shadow-3 z-2"
+                    style="width: 32px; height: 32px; bottom: 5px; right: 5px; border: 3px solid white;">
+                    <i class="pi pi-plus text-xs font-bold"></i>
+                </div>
+            </div>
+
+            <h2 class="text-600 font-semibold text-2xl mb-2 mt-2">No pets added yet</h2>
+            <p class="text-500 px-3 line-height-3" style="max-width: 250px;">Click the button above to add one.
+            </p>
+        </div>
+    </div>
+</div>
+
+<p-dialog [(visible)]="displayEditModal" [modal]="true" [style]="{width: '90vw', maxWidth: '500px'}" [draggable]="false"
+    [resizable]="false" [closable]="false" styleClass="custom-dialog">
+    <ng-template pTemplate="header">
+        <div class="flex justify-content-between align-items-start w-full">
+
+            <div class="flex flex-column gap-1">
+                <span class="text-xl font-bold text-primary">
+                    Edit Pet Detail
+                </span>
+                <span class="text-sm font-medium text-500">
+                    Update your pet's information.
+                </span>
+            </div>
+
+            <div class="mr-3 mt-1">
+                <p-tag [value]="selectedPet?.isLocked ? 'Active' : 'Inactive'"
+                    [severity]="selectedPet?.isLocked ? 'success' : 'danger'" [rounded]="true"
+                    styleClass="px-3 shadow-1 text-xs font-bold">
+                </p-tag>
+            </div>
+
+        </div>
+    </ng-template>
+    <div *ngIf="selectedPet" class="p-fluid grid mt-2">
+        <div *ngIf="selectedPet" class="p-fluid grid mt-2">
+            <div class="field col-12 mb-3">
+                <label for="petName" class="font-semibold text-700 mb-2 block ml-1">Pet Name</label>
+                <input pInputText id="petName" [(ngModel)]="selectedPet.petName" [disabled]="selectedPet.isLocked"
+                    placeholder="Enter pet name"
+                    class="border-round-xl h-3rem px-3 shadow-sm font-medium custom-border w-full" />
+            </div>
+
+            <div class="field col-12 md:col-4 mb-3">
+                <label for="species" class="font-semibold text-700 mb-2 block ml-1">Species</label>
+                <input pInputText id="species" [(ngModel)]="selectedPet.species" [disabled]="selectedPet.isLocked"
+                    placeholder="e.g. Dog, Cat"
+                    class="border-round-xl h-3rem px-3 shadow-sm font-medium custom-border w-full" />
+            </div>
+
+            <div class="field col-12 md:col-8 mb-3">
+                <label for="breed" class="font-semibold text-700 mb-2 block ml-1">Breed</label>
+                <input pInputText id="breed" [(ngModel)]="selectedPet.breed" [disabled]="selectedPet.isLocked"
+                    placeholder="e.g. Golden Retriever"
+                    class="border-round-xl h-3rem px-3 shadow-sm font-medium custom-border w-full" />
+            </div>
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <div
+            class="flex flex-column sm:flex-row justify-content-between align-items-center w-full gap-3 pt-3 border-top-1 surface-border">
+
+            <div class="w-full sm:w-auto">
+                <button pButton label="Save" icon="pi pi-save" class="p-button-success w-full sm:w-auto border-round-lg"
+                    (click)="handleSave()" [disabled]="selectedPet?.isLocked">
+                </button>
+            </div>
+
+            <div class="flex gap-2 w-full sm:w-auto justify-content-end">
+                <button pButton icon="pi pi-lock" label="Lock" class="p-button-primary border-round-lg"
+                    (click)="handleLock(selectedPet)" [disabled]="selectedPet?.isLocked">
+                </button>
+
+                <button pButton icon="pi pi-lock-open" label="Unlock" class="p-button-primary border-round-lg"
+                    (click)="handleUnlock(selectedPet)" [disabled]="!selectedPet?.isLocked">
+                </button>
+
+                <button pButton label="Cancel" icon="pi pi-times" class="p-button-danger border-round-lg"
+                    (click)="displayEditModal = false">
+                </button>
+            </div>
+        </div>
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog key="petDialog"></p-confirmDialog>

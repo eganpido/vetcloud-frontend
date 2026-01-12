@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CustomerService } from '../../services/customer.service';
+import { AuthService } from '../../services/auth.service';
 
 // PrimeNG Modules
 import { TableModule } from 'primeng/table';
@@ -56,7 +57,8 @@ export class CustomerListComponent implements OnInit {
   constructor(
     private customerService: CustomerService,
     private confirmationService: ConfirmationService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private authService: AuthService,
   ) { }
 
   ngOnInit(): void {
@@ -78,10 +80,21 @@ export class CustomerListComponent implements OnInit {
     });
   }
 
-  // --- VIEW LOGIC ---
+  // Logic
 
   openCreate() {
-    this.selectedCustomer = { code: '', customerName: '', customerAdress: '', contactNumber: '', isLocked: false };
+    // Kuhaon ang ID gikan sa AuthService
+    const loggedInUserId = this.authService.getCurrentUserId();
+
+    this.selectedCustomer = {
+      code: '',
+      customerName: '',
+      customerAdress: '',
+      contactNumber: '',
+      isLocked: false,
+      createdById: loggedInUserId // I-set ang creator
+    };
+
     this.isEdit = false;
     this.viewingDetail = true;
   }
@@ -92,39 +105,42 @@ export class CustomerListComponent implements OnInit {
     this.viewingDetail = true;
   }
 
-  // --- ACTIONS ---
+  // Actions
   handleSave(customerData: any) {
+    const payload = {
+      ...customerData,
+      createdById: customerData.createdById?.userId || customerData.createdById,
+      updatedById: customerData.updatedById?.userId || customerData.updatedById
+    };
+
     if (this.isEdit) {
-      // UPDATE EXISTING RECORD
-      this.customerService.updateCustomer(customerData._id, customerData).subscribe({
+      this.customerService.updateCustomer(payload.customerId, payload).subscribe({
         next: (updatedRes: any) => {
-          this.showSuccess('Customer updated successfully');
+          this.showSuccess('Update successful');
 
-          // PABILIN SA PAGE: 
-          // I-update lang nato ang local object aron sigurado nga fresh ang data sa UI
-          this.selectedCustomer = { ...customerData };
+          this.selectedCustomer = { ...updatedRes };
 
-          // (Optional) I-refresh ang listahan sa background para inig click sa "Back", 
-          // updated na ang table.
           this.loadCustomers();
         },
-        error: (err) => this.showError('Update failed')
+        error: (err) => {
+          const msg = err.error?.message || 'Update failed';
+          this.showError(msg);
+        }
       });
     } else {
-      // CREATE NEW RECORD
-      this.customerService.createCustomer(customerData).subscribe({
+      this.customerService.saveCustomer(payload).subscribe({
         next: (newCustomer: any) => {
-          this.showSuccess('New customer saved');
+          this.showSuccess('Save successful');
 
-          // PABILIN SA PAGE:
-          // Importante: I-assign ang bag-ong ID gikan sa server ngadto sa selectedCustomer
-          // aron ma-enable ang "Lock" button (kay [disabled]="!customer._id" man to)
           this.selectedCustomer = { ...newCustomer };
-          this.isEdit = true; // Usba ang mode ngadto sa Edit mode
+          this.isEdit = true;
 
-          this.loadCustomers(); // Refresh list background
+          this.loadCustomers();
         },
-        error: (err) => this.showError('Save failed')
+        error: (err) => {
+          const msg = err.error?.message || 'Save failed';
+          this.showError(msg);
+        }
       });
     }
   }
@@ -135,29 +151,41 @@ export class CustomerListComponent implements OnInit {
   }
 
   handleLock(customerData: any) {
-    console.log('Row Data:', customerData);
-
     this.confirmationService.confirm({
+      key: 'customerDialog',
       message: 'Are you sure you want to LOCK this record?',
       header: 'Lock Confirmation',
       icon: 'pi pi-lock',
       acceptLabel: 'Yes, Lock it',
-      rejectLabel: 'No, Cancel',
+      rejectLabel: 'No, Cancel it',
       acceptButtonStyleClass: 'p-button-primary',
       rejectButtonStyleClass: 'p-button-danger',
       accept: () => {
-        this.customerService.lockCustomer(customerData.customerId).subscribe({
+        const customerId = customerData.customerId || 0;
+
+        const payload = {
+          ...customerData,
+          createdById: customerData.createdById?.userId || customerData.createdById,
+          updatedById: customerData.updatedById?.userId || customerData.updatedById
+        };
+
+        this.customerService.lockCustomer(customerId, payload).subscribe({
           next: (res: any) => {
-            customerData.isLocked = true;
-            if (this.selectedCustomer && this.selectedCustomer.customerId === customerData.customerId) {
-              this.selectedCustomer.isLocked = true;
+
+            Object.assign(customerData, res);
+
+            if (this.selectedCustomer && (this.selectedCustomer.customerId === res.customerId || !this.selectedCustomer.customerId)) {
+              this.selectedCustomer = { ...res };
             }
-            this.showSuccess('Record locked successfully');
+
+            this.isEdit = true;
+            this.showSuccess('Lock successful');
             this.loadCustomers();
           },
           error: (err: any) => {
             console.error('Server Error:', err);
-            this.showError('Locking failed');
+            const msg = err.error?.message || 'Lock failed';
+            this.showError(msg);
           }
         });
       }
@@ -165,33 +193,58 @@ export class CustomerListComponent implements OnInit {
   }
 
   handleUnlock(customerData: any) {
-    this.customerService.unlockCustomer(customerData.customerId).subscribe({
-      next: (res: any) => {
-        this.selectedCustomer.isLocked = false;
-        this.showSuccess('Record unlocked successfully');
-        this.loadCustomers();
-      },
-      error: (err: any) => {
-        console.error(err);
-        this.showError('Unlocking failed');
+    this.confirmationService.confirm({
+      key: 'customerDialog',
+      message: 'Are you sure you want to UNLOCK this record? This will allow users to edit the information again.',
+      header: 'Unlock Confirmation',
+      icon: 'pi pi-lock-open',
+      acceptLabel: 'Yes, Unlock it',
+      rejectLabel: 'No, Cancel it',
+      acceptButtonStyleClass: 'p-button-primary',
+      rejectButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        // I-siguro nga customerId ra ang i-pasa
+        const id = customerData.customerId;
+
+        this.customerService.unlockCustomer(id).subscribe({
+          next: (res: any) => {
+            // 1. I-update ang customerData sa table list
+            // Ang 'res' duna na'y fullname tungod sa backend aggregation helper (getCustomerWithDetails)
+            Object.assign(customerData, res);
+
+            // 2. I-update ang selectedCustomer (ang naa sa Detail View)
+            if (this.selectedCustomer && this.selectedCustomer.customerId === res.customerId) {
+              this.selectedCustomer = { ...res };
+            }
+
+            this.showSuccess('Unlock successful');
+            this.loadCustomers(); // Refresh ang listahan para sigurado
+          },
+          error: (err: any) => {
+            console.error('Unlock Error:', err);
+            const msg = err.error?.message || 'Unlock failed';
+            this.showError(msg);
+          }
+        });
       }
     });
   }
 
   handleDelete(customerData: any) {
     this.confirmationService.confirm({
+      key: 'customerDialog',
       message: `Confirm delete for ${customerData.customerName}?`,
       header: 'Delete Confirmation',
       icon: 'pi pi-trash',
+      acceptLabel: 'Yes, Delete it',
+      rejectLabel: 'No, Cancel it',
       acceptButtonStyleClass: 'p-button-primary',
       rejectButtonStyleClass: 'p-button-danger',
       accept: () => {
-        // Pasa ang customerId (e.g., 1, 2, 3)
         this.customerService.deleteCustomer(customerData.customerId).subscribe({
           next: () => {
-            // I-remove sa listahan gamit ang customerId
             this.customers = this.customers.filter(c => c.customerId !== customerData.customerId);
-            this.showSuccess('Deleted successfully');
+            this.showSuccess('Delete successful');
           },
           error: (err: any) => {
             console.error("Delete failed:", err);
@@ -237,7 +290,7 @@ export class CustomerListComponent implements OnInit {
     link.click();
     document.body.removeChild(link);
 
-    this.showSuccess('Exported successfully');
+    this.showSuccess('Export successful');
   }
 
   private showSuccess(msg: string) {

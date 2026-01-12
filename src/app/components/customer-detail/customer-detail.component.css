@@ -1,0 +1,13 @@
+/* I-target ang icon sa sulod sa atong custom class */
+::ng-deep .textarea-icon-top .p-inputicon {
+    top: 0.8rem !important;
+    /* I-adjust kini depende sa katin-aw sa imong line height */
+    margin-top: 0 !important;
+    transform: none !important;
+    /* Tangtangon ang default vertical centering */
+}
+
+/* Sigurohon nga naay space ang text para dili matabonan sa icon */
+::ng-deep .textarea-icon-top textarea {
+    padding-left: 2.5rem !important;
+}

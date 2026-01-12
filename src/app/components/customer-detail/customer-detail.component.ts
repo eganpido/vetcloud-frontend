@@ -7,6 +7,8 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
+import { SkeletonModule } from 'primeng/skeleton';
+import { PetListComponent } from '../pet-list/pet-list.component';
 
 @Component({
   selector: 'app-customer-detail',
@@ -19,7 +21,9 @@ import { TextareaModule } from 'primeng/textarea';
     IconFieldModule,
     InputIconModule,
     TextareaModule,
-    TagModule
+    TagModule,
+    SkeletonModule,
+    PetListComponent,
   ],
   templateUrl: './customer-detail.component.html',
   styleUrls: ['./customer-detail.component.css']
@@ -33,23 +37,33 @@ export class CustomerDetailComponent {
   @Output() onUnlock = new EventEmitter<any>();
   @Output() onBack = new EventEmitter<void>();
 
+  loading: boolean = true;
+
+  constructor() { }
+
+  ngOnInit() {
+    this.loading = true;
+
+    // I-log nato aron makita nato ang tinuod nga sulod sa customer object
+    console.log('Customer Input Data:', this.customer);
+
+    setTimeout(() => {
+      this.loading = false;
+    }, 1500);
+  }
   save() {
-    // I-emit ang data sa parent para i-save sa database
     this.onSave.emit(this.customer);
   }
 
   lock() {
-    // Inig click, i-emit padulong sa parent para sa Confirmation Dialog ug API call
     this.onLock.emit(this.customer);
   }
 
   unlock() {
-    // Inig click, i-emit padulong sa parent para sa API call
     this.onUnlock.emit(this.customer);
   }
 
   back() {
-    // Inig click sa back, pahibalo-on ang parent aron mo-refresh ang listahan
     this.onBack.emit();
   }
 }

@@ -90,18 +90,11 @@ export class LoginComponent implements OnInit {
         this.loading = true;
         this.authService.login(this.loginData).subscribe({
             next: (res: any) => {
-                // --- KINI ANG MGA PANGUTANA NGA GIDUGANG ---
-
-                // 1. I-save ang Token (kasagaran gibuhat na ni sa authService, pero siguroha lang)
                 localStorage.setItem('token', res.token);
-
-                // 2. I-save ang Fullname gikan sa backend response
-                // Siguroha nga ang imong backend login API nag-return og 'fullname'
                 localStorage.setItem('fullname', res.user.fullname || 'Userless');
                 localStorage.setItem('branchName', this.selectedBranch.branchName);
-                // 2. I-save ang gipili nga BranchId sa session/localStorage
-                // Ang res.user.branchId (optional) vs selectedBranch.branchId
                 this.authService.setCurrentBranch(this.selectedBranch.branchId);
+                localStorage.setItem('user', JSON.stringify(res.user));
 
                 this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Login Successful!' });
 

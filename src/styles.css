@@ -59,3 +59,18 @@ body .p-connected-overlay-enter-done {
     bottom: 0 !important;
     transform: translateY(-45px) !important;
 }
+
+/* I-target ang custom-delete-btn kon kini disabled */
+.custom-delete-btn:disabled {
+    color: #000000 !important;
+    /* Itom nga font/icon */
+    opacity: 0.4 !important;
+    /* Tangtangon ang pagka-blur/faded */
+    cursor: not-allowed;
+    /* Pakita nga dili ma-click */
+}
+
+/* Sigurohon nato nga ang icon sa sulod mahimo sad og itom */
+.custom-delete-btn:disabled .p-button-icon {
+    color: #000000 !important;
+}

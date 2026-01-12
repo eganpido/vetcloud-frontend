@@ -40,9 +40,9 @@
                     <th pSortableColumn="code">Code <p-sortIcon field="code" *ngIf="!loading"></p-sortIcon></th>
                     <th pSortableColumn="customerName">Customer Name <p-sortIcon field="customerName"
                             *ngIf="!loading"></p-sortIcon></th>
-                    <th pSortableColumn="customerAdress">Address <p-sortIcon field="customerAdress"
-                            *ngIf="!loading"></p-sortIcon></th>
                     <th pSortableColumn="contactNumber">Contact <p-sortIcon field="contactNumber"
+                            *ngIf="!loading"></p-sortIcon></th>
+                    <th pSortableColumn="customerAdress">Address <p-sortIcon field="customerAdress"
                             *ngIf="!loading"></p-sortIcon></th>
                     <th class="text-center">Status</th>
                     <th class="text-center" style="width: 120px">Action</th>
@@ -68,11 +68,11 @@
                 <tr *ngIf="!loading" class="customer-row">
                     <td><i class="pi pi-tag mr-2"></i>{{ customer.code }}</td>
                     <td><i class="pi pi-user mr-2"></i>{{ customer.customerName }}</td>
-                    <td><i class="pi pi-map-marker text-400 mr-2"></i>{{ customer.customerAdress }}</td>
                     <td><i class="pi pi-phone text-400 mr-2"></i>{{ customer.contactNumber }}</td>
+                    <td><i class="pi pi-map-marker text-400 mr-2"></i>{{ customer.customerAdress }}</td>
                     <td class="text-center">
-                        <p-tag [severity]="customer.isLocked ? 'danger' : 'success'"
-                            [value]="customer.isLocked ? 'Locked' : 'Unlocked'" [rounded]="true">
+                        <p-tag [severity]="customer.isLocked ? 'success' : 'danger'"
+                            [value]="customer.isLocked ? 'Active' : 'Inactive'" [rounded]="true">
                         </p-tag>
                     </td>
                     <td class="text-center">
@@ -93,8 +93,15 @@
             <ng-template pTemplate="emptymessage">
                 <tr *ngIf="!loading">
                     <td colspan="6" class="empty-state text-center p-5">
-                        <i class="pi pi-database text-600 mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
-                        <div class="text-xl font-medium text-600">No Customers Found</div>
+                        <div class="relative flex align-items-center justify-content-center mb-4">
+                            <div class="absolute border-circle bg-gray-100 w-8rem h-8rem opacity-50"></div>
+
+                            <div class="relative flex align-items-center justify-content-center"
+                                style="width: 100px; height: 100px;">
+                                <i class="pi pi-search text-300 text-6xl"></i>
+                            </div>
+                        </div>
+                        <div class="text-600 font-bold text-2xl mb-2 m-0">Record not found</div>
                     </td>
                 </tr>
             </ng-template>
@@ -108,4 +115,4 @@
     </app-customer-detail>
 </div>
 
-<p-confirmDialog></p-confirmDialog>
+<p-confirmDialog key="customerDialog"></p-confirmDialog>

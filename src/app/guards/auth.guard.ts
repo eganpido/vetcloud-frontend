@@ -7,10 +7,12 @@ export const authGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
 
   if (authService.isLoggedIn()) {
-    return true; // Tugotan nga makasulod kay logged in man
+    return true;
   } else {
-    // Kon wala ka-login, i-send sa login page
-    router.navigate(['/login']);
-    return false;
+    // Imbes return false ra, i-return ang UrlTree
+    // Kini mopugong sa 'Transition Aborted' error kay klaro ang redirection
+    return router.createUrlTree(['/login'], {
+      queryParams: { returnUrl: state.url }
+    });
   }
 };

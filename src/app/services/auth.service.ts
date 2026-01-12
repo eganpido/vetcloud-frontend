@@ -39,6 +39,31 @@ export class AuthService {
     return localStorage.getItem('currentBranchId');
   }
 
+  // I-add kini nga function
+  getCurrentUserId(): number | null {
+    const userJson = localStorage.getItem('user');
+    if (userJson) {
+      const userData = JSON.parse(userJson);
+      // Siguroha nga 'userId' ang field name nga gi-save nimo pag-login
+      return userData.userId;
+    }
+    return null;
+  }
+
+  // Optional: Function para makuha ang tibuok user object
+  getCurrentUser() {
+    const userJson = localStorage.getItem('user');
+    if (userJson) {
+      try {
+        return JSON.parse(userJson); // Kini mo-return sa { userId, username, fullname }
+      } catch (e) {
+        console.error("Error parsing user storage", e);
+        return null;
+      }
+    }
+    return null;
+  }
+
   // --- AUTH HELPERS ---
 
   isLoggedIn(): boolean {
